@@ -1,0 +1,43 @@
+{
+  "name": "LupUploader",
+  "version": "1.0.0",
+  "description": "Upload art to LupPublic",
+  "manifest_version": 2,
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "page_action": {
+    "default_title": "manga downloader",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "*://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.pixiv.net/*",
+        "https://danbooru.donmai.us/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "./assets/toastr/toastr.min.css",
+        "./assets/lup.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+}

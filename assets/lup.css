@@ -1,0 +1,33 @@
+.lup-btn {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 35px;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+    background: url('https://sun9-34.userapi.com/impg/LYWy0_o9MZLV7vMYmQMkFZ5JkTs_gj3sVAID2w/AGBzhfa4qKk.jpg?size=2160x2160&quality=96&sign=75383cbfe6bb59c812bf61b7001b297c&type=album') center center;
+    background-size: cover;
+    overflow: hidden;
+}
+
+.lup-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.0);
+    transition: all ease-in-out .25s;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.lup-btn:hover::after {
+    background: rgba(0, 0, 0, 0.5);
+}
