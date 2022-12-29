@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import "./style.scss";
 
 async function listenInputChange(selector: string, key: string) {
   const elem = document.querySelector(selector) as HTMLInputElement;

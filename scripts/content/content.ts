@@ -1,5 +1,8 @@
 import {SourceManager} from "../sources/SourceManager";
 import {IContentSource} from "../sources/abstracts/IContentSource";
+import {ToastLoggerFrontend} from "../loggers/ToastLogger/ToastLoggerFrontend";
+
+ToastLoggerFrontend.listenLogMessages();
 
 function bootstrap() {
   const sourceManager = new SourceManager<IContentSource>();
