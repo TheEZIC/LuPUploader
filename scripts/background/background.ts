@@ -25,13 +25,13 @@ chrome.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendRes
       console.log(await getWall(), wall);
 
       let upload_server = (await getUploadServer()).response;
-      console.log(upload_server);
+      console.log(upload_server, "server");
 
       let uploaded_photo = await uploadPhoto(upload_server.upload_url, image, `image.${payload.imageUrl.split('.').pop()}`);
-      console.log(uploaded_photo);
+      console.log(uploaded_photo, "upload photo");
 
       let saved_photo = (await savePhoto(uploaded_photo.server, uploaded_photo.photo, uploaded_photo.hash)).response[0];
-      console.log(saved_photo);
+      console.log(saved_photo, "saved photo");
 
       let timeSlot = await PostsScheduler.getAvailableTimeSlot()
       let date = new Date(timeSlot);
