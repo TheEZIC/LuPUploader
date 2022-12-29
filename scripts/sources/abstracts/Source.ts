@@ -3,7 +3,7 @@ import {IContentSource} from "./IContentSource";
 import {IBackgroundSource} from "./IBackgroundSource";
 import {IPopupSource} from "./IPupupSource";
 import {IReqUploadCommand, UploadCommandsType} from "../../commands/UploadCommands";
-import { ISourceData } from "./ISourceData";
+import {ISourceData, ITag} from "./ISourceData";
 
 export default abstract class Source implements IBaseSource, IContentSource, IBackgroundSource, IPopupSource {
   /*
@@ -14,12 +14,12 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
   /*
    * Collect image tags
    */
-  protected abstract collectTags(): string[];
+  protected abstract collectTags(): ITag[];
 
   /*
    * Get url of the image
    */
-  protected abstract getImageUrl(): string;
+  protected abstract getImageUrls(): string[];
 
   /*
   * Add button to page which upload image to vk community
@@ -44,15 +44,12 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
    * Send a message to background to upload image to vk community
    */
   private upload() {
-    const imageUrl = this.getImageUrl();
-    const tags = this.collectTags().map(t => {
-      const tag = t.replace(/\W+/gm, "").replace(" ", "_");
-      return `(#${tag})`;
-    });
+    const imageUrls = this.getImageUrls();
+    const tags = this.formatTags(this.collectTags());
 
     const payload: ISourceData = {
       tags,
-      imageUrl,
+      imageUrls,
       copyright: window.location.href,
       cookie: document.cookie,
       origin: window.location.origin,
@@ -66,6 +63,20 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
     console.log(payload);
 
     chrome.runtime.sendMessage(command);
+  }
+
+  private formatTags(tags: ITag[]): ITag[] {
+    return tags.map(t => {
+      const list = t.list.map(li => {
+        const trimed = li
+          .replace(/ /gm, "_")
+          .replace(/\W+/gm, "");
+
+        return `(#${trimed})`;
+      });
+
+      return {...t, list};
+    });
   }
 
   /*

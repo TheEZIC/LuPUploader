@@ -1,4 +1,5 @@
 import Source from "../abstracts/Source";
+import {ITag, TagType} from "../abstracts/ISourceData";
 
 export default class DanboruSource extends Source {
   public isImagePage(url: string): boolean {
@@ -10,15 +11,26 @@ export default class DanboruSource extends Source {
     return Array.from(document.querySelectorAll(selector)).map(t => t.innerHTML.trim());
   }
 
-  protected collectTags(): string[] {
+  protected collectTags(): ITag[] {
+    const sourceTags = this.parseTagGroup("ul.copyright-tag-list li .search-tag");
+    const characterTags = this.parseTagGroup("ul.character-tag-list li .search-tag");
+
     return [
-      ...this.parseTagGroup("ul.character-tag-list li .search-tag"),
-      ...this.parseTagGroup("ul.general-tag-list li .search-tag"),
+      {
+        type: TagType.Source,
+        list: sourceTags,
+      },
+      {
+        type: TagType.Character,
+        list: characterTags,
+      }
     ];
   }
 
-  protected getImageUrl(): string {
+  protected getImageUrls(): string[] {
     const img = document.querySelector(".image-container img");
-    return img.getAttribute("src")
+    const src = img.getAttribute("src");
+
+    return [src];
   }
 }

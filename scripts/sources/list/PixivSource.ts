@@ -1,4 +1,5 @@
 import Source from "../abstracts/Source";
+import {ITag, TagType} from "../abstracts/ISourceData";
 
 export default class PixivSource extends Source {
   public isImagePage(url: string): boolean {
@@ -10,13 +11,20 @@ export default class PixivSource extends Source {
     return url.startsWith("https://i.pximg.net/");
   }
 
-  protected collectTags(): string[] {
-    const tagElements = Array.from(document.querySelectorAll(".gtm-new-work-translate-tag-event-click"));
-    return tagElements.map(t => t.innerHTML);
+  protected collectTags(): ITag[] {
+    const tagElements = Array.from(document.querySelectorAll(".gtm-new-work-translate-tag-event-click"))
+      .map(t => t.innerHTML);
+
+    return [
+      {
+        type: TagType.General,
+        list: tagElements
+      },
+    ];
   }
 
-  protected getImageUrl(): string {
-    const img = document.querySelector(".gtm-expand-full-size-illust img");
-    return img.getAttribute("src");
+  protected getImageUrls(): string[] {
+    const imgs = Array.from(document.querySelectorAll("div[role='presentation'] img"));
+    return imgs.map(img => img.getAttribute("src"));
   }
 }

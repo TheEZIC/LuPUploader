@@ -72,7 +72,7 @@ export async function savePhoto(server, photo, hash) {
   return data;
 }
 
-export async function addWallPost(message: string, attachment: string, publishDate: Date, copyright: string) {
+export async function addWallPost(message: string, attachments: string[], publishDate: Date, copyright: string) {
   console.log(publishDate);
 
   let { data } = await Axios.get('https://api.vk.com/method/wall.post', {
@@ -81,7 +81,7 @@ export async function addWallPost(message: string, attachment: string, publishDa
       owner_id: -config.groupId,
       from_group: 1,
       message,
-      attachments: attachment,
+      attachments,
       publish_date: getUnixTime(publishDate),
       copyright,
     },

@@ -1,8 +1,14 @@
-import { UploadCommands, UploadCommandsType } from "../commands/UploadCommands";
+import {UploadCommands, UploadCommandsType} from "../commands/UploadCommands";
 import Axios from 'axios';
 import {addWallPost, getUploadServer, getWall, savePhoto, uploadPhoto} from './VKAPI';
 import CookiesSubstitute from "./CookiesSubstitute";
 import PostsScheduler from "./PostsScheduler";
+import {ITag, TagType} from "../sources/abstracts/ISourceData";
+
+function getTagsStringByType(type: TagType, tags: ITag[]): string {
+  const tagsByType = tags.find(t => t.type === type);
+  return (tagsByType ? tagsByType.list : []).join(" ");
+}
 
 chrome.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendResponse) => {
   const {cmd, payload} = req;
@@ -11,40 +17,49 @@ chrome.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendRes
     case UploadCommandsType.Req: {
       console.log(payload, "uploading image")
       let wall = await getWall();
-
-      const cookiesSubstitute = new CookiesSubstitute(payload.cookie, payload.origin);
-      cookiesSubstitute.start();
-
-      let { data: image } = await Axios.get(payload.imageUrl, {
-        responseType: "blob",
-      });
-
-      cookiesSubstitute.close();
-      console.log(image);
-
-      console.log(await getWall(), wall);
+      console.log(await getWall(), wall, "wall");
 
       let upload_server = (await getUploadServer()).response;
       console.log(upload_server, "server");
 
-      let uploaded_photo = await uploadPhoto(upload_server.upload_url, image, `image.${payload.imageUrl.split('.').pop()}`);
-      console.log(uploaded_photo, "upload photo");
+      const cookiesSubstitute = new CookiesSubstitute(payload.cookie, payload.origin);
+      cookiesSubstitute.start();
 
-      let saved_photo = (await savePhoto(uploaded_photo.server, uploaded_photo.photo, uploaded_photo.hash)).response[0];
-      console.log(saved_photo, "saved photo");
+      let attachments: string[] = [];
+
+      for (let imageUrl of payload.imageUrls) {
+        let { data: image } = await Axios.get(imageUrl, {
+          responseType: "blob",
+        });
+
+        let uploaded_photo = await uploadPhoto(upload_server.upload_url, image, `image.${imageUrl.split('.').pop()}`);
+        console.log(uploaded_photo, "uploaded photo");
+
+        let saved_photo = (await savePhoto(uploaded_photo.server, uploaded_photo.photo, uploaded_photo.hash)).response[0];
+        console.log(saved_photo, "saved photo");
+        attachments.push(`photo${saved_photo.owner_id}_${saved_photo.id}`);
+      }
+
+      cookiesSubstitute.close();
 
       let timeSlot = await PostsScheduler.getAvailableTimeSlot()
       let date = new Date(timeSlot);
       console.log(timeSlot, date);
 
+      const sourceTags = getTagsStringByType(TagType.Source, payload.tags);
+      const characterTags = getTagsStringByType(TagType.Character, payload.tags);
+      const generalTags = getTagsStringByType(TagType.General, payload.tags);
+
+      const tagsString = `${sourceTags} ${characterTags} ${generalTags}`.trim();
+
       const tags = `
 (#anime@lupublic) (#аниме@lupublic) (#art@lupublic)
-${payload.tags.join(" ")}
+${tagsString}
       `;
 
       let wall_post = (await addWallPost(
         tags,
-        `photo${saved_photo.owner_id}_${saved_photo.id}`,
+        attachments,
         date,
         payload.copyright
       )).response;
