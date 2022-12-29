@@ -9,6 +9,10 @@ export class SourceManager<T extends IBaseSource> {
     new PixivSource(),
   ];
 
+  get all() {
+    return this.sources;
+  }
+
   public isUrlSupported(url: string): boolean {
     const source = this.findByUrl(url);
     return Boolean(source);

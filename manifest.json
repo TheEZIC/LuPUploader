@@ -21,6 +21,9 @@
   "permissions": [
     "storage",
     "tabs",
+    "downloads",
+    "webRequest",
+    "webRequestBlocking",
     "*://*/*"
   ],
   "content_scripts": [

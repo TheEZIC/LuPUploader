@@ -15,7 +15,7 @@ export async function waitForSelector(selector, opts: any = {}): Promise<void> {
         const nodes = Array.from(mutation.addedNodes)
         console.log(nodes);
         for (const node of nodes) {
-          //@ts-ignore
+          // @ts-ignore
           if (node.matches && node.matches(selector)) {
             mutObserver.disconnect()
             resolve()

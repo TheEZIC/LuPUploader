@@ -3,6 +3,7 @@ import {IContentSource} from "./IContentSource";
 import {IBackgroundSource} from "./IBackgroundSource";
 import {IPopupSource} from "./IPupupSource";
 import {IReqUploadCommand, UploadCommandsType} from "../../commands/UploadCommands";
+import { ISourceData } from "./ISourceData";
 
 export default abstract class Source implements IBaseSource, IContentSource, IBackgroundSource, IPopupSource {
   /*
@@ -21,8 +22,8 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
   protected abstract getImageUrl(): string;
 
   /*
- * Add button to page which upload image to vk community
- */
+  * Add button to page which upload image to vk community
+  */
   private addButton(): HTMLElement {
     const container = document.querySelector("body");
     const button = document.createElement("div");
@@ -33,14 +34,28 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
   }
 
   /*
+   * Check is url secured or not
+   */
+  public isUrlSecured(url: string): boolean {
+    return false;
+  }
+
+  /*
    * Send a message to background to upload image to vk community
    */
   private upload() {
     const imageUrl = this.getImageUrl();
-    const tags = this.collectTags();
-    const payload = {
+    const tags = this.collectTags().map(t => {
+      const tag = t.replace(/\W+/gm, "").replace(" ", "_");
+      return `(#${tag})`;
+    });
+
+    const payload: ISourceData = {
       tags,
       imageUrl,
+      copyright: window.location.href,
+      cookie: document.cookie,
+      origin: window.location.origin,
     };
 
     const command: IReqUploadCommand = {
@@ -56,8 +71,8 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
   /*
    * Execute source on page
    */
-  public async run(): Promise<void> {
-    const btn = await this.addButton();
+  public run(): void {
+    const btn = this.addButton();
     btn.addEventListener("click", () => this.upload());
   }
 }

@@ -13,6 +13,8 @@
     background: url('https://sun9-34.userapi.com/impg/LYWy0_o9MZLV7vMYmQMkFZ5JkTs_gj3sVAID2w/AGBzhfa4qKk.jpg?size=2160x2160&quality=96&sign=75383cbfe6bb59c812bf61b7001b297c&type=album') center center;
     background-size: cover;
     overflow: hidden;
+    box-sizing: border-box;
+    border: none !important;
 }
 
 .lup-btn::after {

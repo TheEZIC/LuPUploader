@@ -2,7 +2,12 @@ import Source from "../abstracts/Source";
 
 export default class PixivSource extends Source {
   public isImagePage(url: string): boolean {
-    return url.startsWith("https://www.pixiv.net/en/artworks/");
+    const regexp = /https:\/\/www\.pixiv\.net\/(\D{2}\/)?artworks\/.+$/;
+    return regexp.test(url);
+  }
+
+  public isUrlSecured(url: string): boolean {
+    return url.startsWith("https://i.pximg.net/");
   }
 
   protected collectTags(): string[] {
