@@ -4,6 +4,7 @@ import {IBackgroundSource} from "./IBackgroundSource";
 import {IPopupSource} from "./IPupupSource";
 import {IReqUploadCommand, UploadCommandsType} from "../../commands/UploadCommands";
 import {ISourceData, ITag} from "./ISourceData";
+import browser from "webextension-polyfill";
 
 export default abstract class Source implements IBaseSource, IContentSource, IBackgroundSource, IPopupSource {
   /*
@@ -62,7 +63,7 @@ export default abstract class Source implements IBaseSource, IContentSource, IBa
 
     console.log(payload);
 
-    chrome.runtime.sendMessage(command);
+    browser.runtime.sendMessage(command);
   }
 
   private formatTags(tags: ITag[]): ITag[] {

@@ -1,17 +1,31 @@
 import Axios from 'axios';
 import { getUnixTime } from 'date-fns';
-import config from "../config";
+import browser from "webextension-polyfill";
 
-const default_params = {
-  v: "5.131",
-  access_token: config.token,
-};
+async function getDefaultParams() {
+  const token = (await browser.storage.local.get(["token"])).token ?? "";
+
+  console.log(token, "token");
+
+  return {
+    v: "5.131",
+    access_token: token,
+  };
+}
+
+async function getGroupId() {
+  const id = (await browser.storage.local.get(["groupId"])).groupId ?? "";
+  return id;
+}
 
 export async function getWall() {
+  const default_params = await getDefaultParams();
+  const groupId = await getGroupId();
+
   let { data } = await Axios.get('https://api.vk.com/method/wall.get', {
     params: {
       ...default_params,
-      owner_id: -config.groupId,
+      owner_id: -groupId,
       count: 100,
       filter: "postponed",
     },
@@ -34,10 +48,11 @@ export async function getDelayedWallTimestamps() {
 }
 
 export async function getUploadServer() {
+  const default_params = await getDefaultParams();
   let { data } = await Axios.get('https://api.vk.com/method/photos.getWallUploadServer', {
     params: {
       ...default_params,
-      group_id: config.groupId
+      group_id: await getGroupId()
     },
   });
 
@@ -61,10 +76,11 @@ export async function uploadPhoto(server: string, image: Blob, filename: string)
 }
 
 export async function savePhoto(server, photo, hash) {
+  const default_params = await getDefaultParams();
   let { data } = await Axios.get('https://api.vk.com/method/photos.saveWallPhoto', {
     params: {
       ...default_params,
-      group_id: config.groupId,
+      group_id: await getGroupId(),
       server, photo, hash,
     },
   });
@@ -73,12 +89,14 @@ export async function savePhoto(server, photo, hash) {
 }
 
 export async function addWallPost(message: string, attachments: string[], publishDate: Date, copyright: string) {
+  const default_params = await getDefaultParams();
+  const groupId = await getGroupId();
   console.log(publishDate);
 
   let { data } = await Axios.get('https://api.vk.com/method/wall.post', {
     params: {
       ...default_params,
-      owner_id: -config.groupId,
+      owner_id: -groupId,
       from_group: 1,
       message,
       attachments,

@@ -52,6 +52,21 @@ gulp.task("scripts-background", () => {
 		.pipe(gulp.dest('./dist'));
 })
 
+gulp.task("ts-options", () => {
+	const tsConfig = ts.createProject("tsconfig.json",);
+
+	return gulp.src("./scripts/**/*.ts")
+		.pipe(tsConfig())
+		.pipe(gulp.dest("./temp"));
+})
+
+gulp.task("scripts-options", () => {
+	return browserify('./temp/options/options.js')
+		.bundle()
+		.pipe(source('./options.js'))
+		.pipe(gulp.dest('./dist'));
+})
+
 gulp.task("styles", () => {
 	return gulp.src('./style/style.scss')
 		.pipe(sass({
@@ -72,6 +87,7 @@ gulp.task("copyIcons", done => {
 
 gulp.task("copyHtml", done => {
 	gulp.src('./popup.html').pipe(gulp.dest('./dist'));
+	gulp.src('./options.html').pipe(gulp.dest('./dist'));
 	done();
 });
 
@@ -91,6 +107,7 @@ gulp.task("watch", () => {
 	gulp.watch('./scripts/**/*.ts', gulp.series([...defaultScripts, "ts-content", "scripts-content"]));
 	gulp.watch('./scripts/**/*.ts', gulp.series([...defaultScripts, "ts-popup", "scripts-popup"]));
 	gulp.watch('./scripts/**/*.ts', gulp.series([...defaultScripts, "ts-background", "scripts-background"]));
+	gulp.watch('./scripts/**/*.ts', gulp.series([...defaultScripts, "ts-options", "scripts-options"]));
 	gulp.watch('./style/**/*.scss', gulp.parallel(["styles"]));
 })
 
@@ -100,6 +117,7 @@ exports.build = gulp.series([
 		gulp.series(["ts-content", "scripts-content"]),
 		gulp.series(["ts-popup", "scripts-popup"]),
 		gulp.series(["ts-background", "scripts-background"]),
+		gulp.series(["ts-options", "scripts-options"]),
 		"styles",
 	),
 ]);

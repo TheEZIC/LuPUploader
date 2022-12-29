@@ -4,13 +4,15 @@ import {addWallPost, getUploadServer, getWall, savePhoto, uploadPhoto} from './V
 import CookiesSubstitute from "./CookiesSubstitute";
 import PostsScheduler from "./PostsScheduler";
 import {ITag, TagType} from "../sources/abstracts/ISourceData";
+import browser from "webextension-polyfill";
 
 function getTagsStringByType(type: TagType, tags: ITag[]): string {
   const tagsByType = tags.find(t => t.type === type);
   return (tagsByType ? tagsByType.list : []).join(" ");
 }
 
-chrome.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendResponse) => {
+//@ts-ignore
+browser.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendResponse) => {
   const {cmd, payload} = req;
 
   switch (cmd) {

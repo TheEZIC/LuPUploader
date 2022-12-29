@@ -7,14 +7,10 @@ export interface ITimePeriod {
 }
 
 export interface IConfig {
-  token: string;
-  groupId: number;
   timePeriods: ITimePeriod[];
 }
 
 const config: IConfig = {
-  token: "",
-  groupId: 123456789,
   timePeriods: [
     {
       from: "9:00",

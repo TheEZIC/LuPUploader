@@ -1,6 +1,7 @@
 import { IBackgroundSource } from "../sources/abstracts/IBackgroundSource";
 import { SourceManager } from "../sources/SourceManager";
 import WebRequestHeadersDetails = chrome.webRequest.WebRequestHeadersDetails;
+import browser from "webextension-polyfill";
 
 export default class CookiesSubstitute {
   constructor(
@@ -10,7 +11,7 @@ export default class CookiesSubstitute {
   }
 
   public async start() {
-    chrome.webRequest.onBeforeSendHeaders.addListener(this.listenerDelegate,{
+    browser.webRequest.onBeforeSendHeaders.addListener(this.listenerDelegate,{
       urls: ["<all_urls>"]
     },[
       "blocking",
@@ -20,7 +21,7 @@ export default class CookiesSubstitute {
   }
 
   public async close() {
-    chrome.webRequest.onBeforeSendHeaders.removeListener(this.listenerDelegate);
+    browser.webRequest.onBeforeSendHeaders.removeListener(this.listenerDelegate);
   }
 
   private listenerCallback(d: WebRequestHeadersDetails) {
