@@ -55,6 +55,7 @@ browser.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendRe
           uploaded_photo = await uploadPhoto(upload_server.upload_url, image, `image.${imageUrl.split('.').pop()}`);
           console.log(uploaded_photo, "uploaded photo");
         } catch {
+          cookiesSubstitute.close();
           ToastLogger.error("Ошибка во время загрузки фото");
         }
 
@@ -64,6 +65,7 @@ browser.runtime.onMessage.addListener(async (req: UploadCommands, sender, sendRe
           saved_photo = (await savePhoto(uploaded_photo.server, uploaded_photo.photo, uploaded_photo.hash)).response[0];
           console.log(saved_photo, "saved photo");
         } catch {
+          cookiesSubstitute.close();
           ToastLogger.error("Ошибка во время загрузки фото на сервера ВК");
         }
 
